@@ -1,5 +1,7 @@
+import Blog from "./pages/blog";
+
 const App = () => {
-	return <div className="text-red-500">App</div>;
+	return <Blog />;
 };
 
 export default App;
