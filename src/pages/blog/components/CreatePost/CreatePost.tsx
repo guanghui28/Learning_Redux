@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Post } from "../../../../types/postType";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import {
 	addPost,
 	cancelEditingPost,
-	finishEditingPost,
+	updatePost,
 } from "../../../../features/blog/blogSlice";
-import { RootState } from "../../../../store";
+import { RootState, useAppDispatch } from "../../../../store";
 
 const initialState = {
 	id: "",
@@ -18,15 +18,18 @@ const initialState = {
 };
 
 const CreatePost = () => {
-	const editingPost = useSelector((state: RootState) => state.blog.editingPost);
+	const { editingPost, loading } = useSelector(
+		(state: RootState) => state.blog
+	);
+
 	const [formData, setFormData] = useState<Post>(initialState);
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		if (editingPost) {
 			// edit post
-			dispatch(finishEditingPost(formData));
+			dispatch(updatePost(formData));
 		} else {
 			// add post
 			const formDataWithId = { ...formData, id: new Date().toISOString() };

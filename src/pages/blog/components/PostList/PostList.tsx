@@ -1,14 +1,26 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import PostItem from "../PostItem";
-import type { RootState } from "../../../../store";
+import { useAppDispatch, type RootState } from "../../../../store";
 import {
 	deletePost,
+	getPostList,
 	startEditingPost,
 } from "../../../../features/blog/blogSlice";
+import { Fragment, useEffect } from "react";
+import PostSkeleton from "../Skeleton/PostSkeleton";
 
 const PostList = () => {
-	const postList = useSelector((state: RootState) => state.blog.postList);
-	const dispatch = useDispatch();
+	const { postList, loading } = useSelector((state: RootState) => state.blog);
+	const dispatch = useAppDispatch();
+
+	useEffect(() => {
+		const promise = dispatch(getPostList());
+
+		return () => {
+			promise.abort();
+		};
+	}, [dispatch]);
+
 	const handleDelete = (postId: string) => {
 		dispatch(deletePost(postId));
 	};
@@ -28,7 +40,14 @@ const PostList = () => {
 					</p>
 				</div>
 				<div className="grid gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-2 xl:grid-cols-2 xl:gap-8">
-					{postList.length > 0 &&
+					{loading && (
+						<Fragment>
+							<PostSkeleton />
+							<PostSkeleton />
+						</Fragment>
+					)}
+					{!loading &&
+						postList.length > 0 &&
 						postList.map((post) => (
 							<PostItem
 								key={post.id}
