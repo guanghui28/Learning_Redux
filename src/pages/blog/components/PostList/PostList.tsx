@@ -4,7 +4,7 @@ import type { RootState } from "../../../../store";
 import {
 	deletePost,
 	startEditingPost,
-} from "../../../../features/blog/blogReducer";
+} from "../../../../features/blog/blogSlice";
 
 const PostList = () => {
 	const postList = useSelector((state: RootState) => state.blog.postList);

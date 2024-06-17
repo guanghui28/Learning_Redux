@@ -5,7 +5,7 @@ import {
 	addPost,
 	cancelEditingPost,
 	finishEditingPost,
-} from "../../../../features/blog/blogReducer";
+} from "../../../../features/blog/blogSlice";
 import { RootState } from "../../../../store";
 
 const initialState = {

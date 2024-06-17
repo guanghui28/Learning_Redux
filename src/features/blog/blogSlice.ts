@@ -1,4 +1,4 @@
-import { createAction, createReducer, current } from "@reduxjs/toolkit";
+import { current, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { Post } from "../../types/postType";
 import { initialPostList } from "../../constants/blog";
 
@@ -12,31 +12,27 @@ const initialState: BlogState = {
 	editingPost: null,
 };
 
-export const addPost = createAction<Post>("blog/addPost");
-export const deletePost = createAction<string>("blog/deletePost");
-export const startEditingPost = createAction<string>("blog/startEditingPost");
-export const cancelEditingPost = createAction("blog/cancelEditingPost");
-export const finishEditingPost = createAction<Post>("blog/finishEditingPost");
-
-const blogReducer = createReducer(initialState, (builder) => {
-	builder
-		.addCase(addPost, (state, action) => {
+const blogSlice = createSlice({
+	name: "blog",
+	initialState,
+	reducers: {
+		addPost: (state, action: PayloadAction<Post>) => {
 			const post = action.payload;
 			state.postList.push(post);
-		})
-		.addCase(deletePost, (state, action) => {
+		},
+		deletePost: (state, action: PayloadAction<string>) => {
 			const postId = action.payload;
 			state.postList = state.postList.filter((post) => post.id !== postId);
-		})
-		.addCase(startEditingPost, (state, action) => {
+		},
+		startEditingPost: (state, action: PayloadAction<string>) => {
 			const postId = action.payload;
 			state.editingPost =
 				state.postList.find((post) => post.id === postId) || null;
-		})
-		.addCase(cancelEditingPost, (state) => {
+		},
+		cancelEditingPost: (state) => {
 			state.editingPost = null;
-		})
-		.addCase(finishEditingPost, (state, action) => {
+		},
+		finishEditingPost: (state, action: PayloadAction<Post>) => {
 			const editedPost = action.payload;
 			state.postList = state.postList.map((post) => {
 				if (post.id === editedPost.id) {
@@ -45,13 +41,23 @@ const blogReducer = createReducer(initialState, (builder) => {
 				return post;
 			});
 			state.editingPost = null;
-		})
-		.addMatcher(
+		},
+	},
+	extraReducers(builder) {
+		builder.addMatcher(
 			(action) => action.type.includes("cancel"),
 			(state) => {
 				console.log("Matcher: ", current(state));
 			}
 		);
+	},
 });
 
-export default blogReducer;
+export const {
+	addPost,
+	deletePost,
+	cancelEditingPost,
+	startEditingPost,
+	finishEditingPost,
+} = blogSlice.actions;
+export default blogSlice.reducer;
